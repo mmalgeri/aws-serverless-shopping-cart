@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body {
+                background: linear-gradient(to right, #373b44, #4286f4);
+                background-image: url('./images/beach.jpg');
+                background-size: cover;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+                margin: 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+            }
+            .container {
+                background-color: rgba(255, 255, 255, 0.8);
+                padding: 20px;
+                border-radius: 5px;
+                text-align: center;
+                width: 1000px;
+                flex-direction: column;
+            }
+            .search-box {
+                width: 75%;
+                padding: 10px;
+                margin-top: 10px;
+            }
+            .search-button {
+                width: 100%;
+                padding: 10px;
+                margin-top: 10px;
+                background-color: #4286f4;
+		        color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+        </style>
+        <script>
+            // define the callAPI function that takes a first name and last name as parameters
+            var callAPI = (domainName)=>{
+                // instantiate a headers object
+                var myHeaders = new Headers();
+                // add content type header to object
+                myHeaders.append("Content-Type", "application/json");
+                // using built in JSON utility package turn object to string and store in a variable
+                console.log("domainName is " + domainName)
+                var raw = JSON.stringify({"queryStringParameters":{"domainName":domainName}});
+                // create a JSON object with parameters for API call and store in a variable
+                var requestOptions = {
+                    method: 'POST',
+                    headers: myHeaders,
+                    body: raw,
+                    redirect: 'follow'
+                };
+                // make API call with parameters and use promises to get response
+                fetch("https://6crrtqyrm3.execute-api.us-west-2.amazonaws.com/dev/", requestOptions)
+                .then(response => response.json())
+                .then(data => {
+                    if (typeof data.body === 'string') {
+                        let body = JSON.parse(data.body);
+                        let status = body.status;
+                        if (status == "available") {
+                            document.getElementById('response').innerHTML = 
+                            domainName + ".ondw.com is AVAILABLE!" +  ' If you would like to own it, please click <a href="https://www.kids4biz.com">here</a>.';
+                        }
+                        else {
+                            document.getElementById('response').innerHTML = 
+                            "We're sorry. " + domainName +".ondw.com" + " is taken";
+                        }
+                    }                
+                })
+                .catch(error => console.log('error', error));
+            }
+        </script>
+    </head>
+    <body>
+        <div class="container">
+                <h2>Do you want to be the "GO TO" website for ON DEMAND info on a product or service?<BR><BR>
+                Do you want to own the <BR><BR>
+                "who", "what", "when", "where", "why", and "how" of something in demand?<BR><BR>
+                Maybe you didn't get "beer.com"
+                <BR><BR> but perhaps you can own<BR><BR> "beer.ondw.com"<BR><BR>
+                Or perhaps you can own <BR><BR>cars.ondw.com<BR><BR>
+                Let's search for the <BR><BR>"ONDW"<BR><BR> property you can own.</h2>
+            <form>
+                <input type="text" id="domainName">
+                <!-- set button onClick method to call function we defined passing input values as parameters -->
+                <button type="button" onclick="callAPI(document.getElementById('domainName').value)">Search</button>
+            </form>
+            <div id="response"></div>
+        </div>
+        
+    </body>
+</html>
